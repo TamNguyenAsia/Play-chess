@@ -1,6 +1,6 @@
 {
- "name": "Cờ Vua",
- "short_name": "Cờ Vua",
+ "name": "Tam - Chess",
+ "short_name": "Tam Chess",
  "description": "Chơi cờ vua với máy, nhiều cấp độ, có gợi ý",
  "start_url": "./",
  "scope": "./",
