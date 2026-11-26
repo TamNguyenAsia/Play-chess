@@ -24,12 +24,12 @@ label{display:flex;align-items:center;gap:5px}
 #cap{display:flex;justify-content:space-between;height:28px;line-height:28px;overflow:hidden;white-space:nowrap;font-size:20px;color:var(--fg);opacity:.85}
 #bdw{container-type:inline-size}
 #bd{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));aspect-ratio:1;border:7px solid #5a3a1c;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 0 0 1px #00000040;overflow:hidden;background:#5a3a1c}
-.sq{position:relative;overflow:hidden;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;font-size:9.6cqw;line-height:1;background:#f0d9b5}
+.sq{position:relative;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;font-size:9.6cqw;line-height:1;background:#f0d9b5}
 .sq.d{background:#b58863}
 .sq i{position:absolute;font:600 10px system-ui;font-style:normal;opacity:.7;color:#5a3a1c}
 .sq.d i{color:#f0d9b5}
 .sq i.f{right:3px;bottom:1px}.sq i.r{left:3px;top:1px}
-.pc{display:flex;align-items:center;justify-content:center;width:100%;height:100%;transition:transform .12s;pointer-events:none}
+.pc{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;transition:transform .12s;pointer-events:none}
 .pc img{width:94%;height:94%;display:block;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
 .sel{box-shadow:inset 0 0 0 100px rgba(70,160,255,.45)}
 .sel .pc{transform:scale(1.12)}
@@ -136,15 +136,26 @@ $('c1').textContent=lost(me!=='w');$('c2').textContent=lost(me==='w')}
 function finish(){const ms=legal(S);if(ms.length)return false;over=true;
 if(inChk(S)){const win=S.t!==me;if(win){const l=+$('lv').value;say('🎉 Chiếu hết! Bạn thắng'+(l<5?' — đã lên Cấp '+(l+1)+'. Bấm Ván mới để thử thách.':' cấp cao nhất!'));if(l<5)$('lv').value=l+1}else say('Chiếu hết. Máy thắng — thử lại hoặc giảm cấp độ nhé.')}
 else say('Hòa (hết nước đi hợp lệ).');return true}
-function play(m){hist.push({S,lm});S=make(S,m);lm=m;sel=null;hint=null;L=legal(S);
+const DUR=520;
+function slide(fs,ts){const el=sqs[act(ts)].querySelector('.pc');if(!el)return;const sq=sqs[act(ts)],a=sqs[act(fs)].getBoundingClientRect(),b=sq.getBoundingClientRect();
+sq.style.zIndex=9;
+el.animate([{transform:'translate('+(a.left-b.left)+'px,'+(a.top-b.top)+'px) scale(1.14)'},{transform:'translate(0,0) scale(1)'}],{duration:DUR,easing:'cubic-bezier(.45,0,.25,1)'}).onfinish=()=>{sq.style.zIndex=''}}
+function ghost(cap,s){const sq=sqs[act(s)],g=document.createElement('img');g.src=IM[SETS[pt]][(isW(cap)?'w':'b')+cap.toUpperCase()];
+g.style.cssText='position:absolute;left:3%;top:3%;width:94%;height:94%;pointer-events:none;z-index:0';sq.appendChild(g);
+g.animate([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.55) rotate(18deg)'}],{duration:DUR,easing:'ease-in',fill:'forwards'}).onfinish=()=>g.remove()}
+function play(m){const w=S.t==='w',cap=S.b[m.t]||(m.e?(w?'p':'P'):0);
+hist.push({S,lm});S=make(S,m);lm=m;sel=null;hint=null;L=legal(S);
 const done=finish();render();
-if(done)return;
-const mine=S.t===me;say((inChk(S)?'⚠️ Chiếu! ':'')+(mine?'Đến lượt bạn.':'Máy đang nghĩ...'));
-if(!mine)setTimeout(ai,60)}
-function ai(){busy=true;setTimeout(()=>{const l=+$('lv').value,ms=legal(S);let m;
+slide(m.f,m.t);
+if(m.ca){const bs=w?56:0;m.t===bs+6?slide(bs+7,bs+5):slide(bs,bs+3)}
+if(cap)ghost(cap,m.e?m.t+(w?8:-8):m.t);
+const mine=S.t===me;
+if(!done)say((inChk(S)?'⚠️ Chiếu! ':'')+(mine?'Đến lượt bạn.':'Máy đang nghĩ...'));
+busy=true;setTimeout(()=>{busy=false;if(!done&&!mine)ai()},DUR+80)}
+function ai(){busy=true;const t0=Date.now();setTimeout(()=>{const l=+$('lv').value,ms=legal(S);let m;
 if(l===1){const cp=ms.filter(x=>S.b[x.t]),pool=cp.length&&Math.random()<.35?cp:ms;m=pool[Math.random()*pool.length|0]}
 else{const[d,n]=CFG[l];m=search(S,d,n,l===5?3000:2000)}
-busy=false;play(m||ms[0])},40)}
+setTimeout(()=>{busy=false;play(m||ms[0])},Math.max(0,650-(Date.now()-t0)))},40)}
 function click(i){if(busy||over||S.t!==me)return;const s=act(i),p=S.b[s];
 const m=sel!==null&&L.filter(x=>x.f===sel&&x.t===s)[0];
 if(m){play(m);return}
