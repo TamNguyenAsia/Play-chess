@@ -3,6 +3,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2a1a0a">
 <meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Cờ Vua</title>
 <style>
 :root{--bg:#f4ede1;--fg:#2b2118;--card:#fffaf0;--acc:#8a5a2b;--ln:#d9c7aa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -157,4 +160,5 @@ setTimeout(()=>{const m=search(S,3,0,1800);busy=false;hint=m;sel=null;const p=S.
 say('💡 Gợi ý: '+NM[p]+' '+sqn(m.f)+' → '+sqn(m.t)+(c?' (ăn quân)':'')+(m.q?' (phong Hậu)':'')+(m.ca?' (nhập thành)':''));render()},40)}
 $('nw').onclick=newGame;$('un').onclick=undo;$('ht').onclick=giveHint;$('gd').onchange=render;$('ps').value=pt;$('ps').onchange=()=>{pt=+$('ps').value;try{localStorage.setItem('pt',pt)}catch(e){}render()};$('sd').onchange=newGame;
 newGame();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
